@@ -38,15 +38,61 @@ describe("Counter.vue", () => {
   })
 
   describe("functionality check", () => {
-    it('should increase count when click increase button', function () {
-      const increaseButton = wrapper.findAll("button").at(1)
-      increaseButton.click()
+    it('should call increase dispatch when click increase button', function () {
+      const mock = jest.fn()
+      const localThis = {
+        $store: {
+          dispatch: mock
+        }
+      }
+      Counter.methods.increase.call(localThis)
+      expect(mock).toHaveBeenCalledWith("increment")
     })
 
     it('should decrease count when click decrease button', function () {
-      const decreaseButton = wrapper.findAll("button").at(0)
+      const mock = jest.fn()
+      const localThis = {
+        $store: {
+          dispatch: mock
+        }
+      }
+      Counter.methods.decrease.call(localThis)
+      expect(mock).toHaveBeenCalledWith("decrement")
+    })
+
+    it('should increase 2 times and decrease 1 time when clicked buttons', function () {
+      const mock = jest.fn()
+      const localThis = {
+        $store: {
+          dispatch: mock
+        }
+      }
+      Counter.methods.increase.call(localThis)
+      Counter.methods.increase.call(localThis)
+      expect(mock).toHaveBeenCalledWith("increment")
+
+      Counter.methods.decrease.call(localThis)
+      expect(mock).toHaveBeenCalledWith("decrement")
+
+      expect(mock).toHaveBeenCalledTimes(3)
     })
   })
+
+  describe("should show count text correctly according to count", () => {
+    it('should render 10k', function () {
+      wrapper = mountComponent(10)
+      const span = wrapper.find("span")
+      expect(span.text()).toEqual("10k")
+    });
+
+    it('should render 20k', function () {
+      wrapper = mountComponent(20)
+      const span = wrapper.find("span")
+      expect(span.text()).toEqual("20k")
+    });
+  })
+
+
 
   // it('should component exist', function () {
   //   expect(wrapper.exists()).toBeTruthy()
